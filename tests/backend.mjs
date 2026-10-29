@@ -5,7 +5,7 @@ class Sheet{rows=[];getRange(r,c,h,w){if(typeof r==='string'){const m=r.match(/^
 const sheets=Object.fromEntries(['Платежи','Расходы','Настройки'].map(n=>[n,new Sheet()]));for(const name of ['Платежи','Расходы'])sheets[name].getRange(4,1).setValues([['ID']]);
 const ss={getSheetByName:n=>sheets[n],insertSheet:n=>sheets[n]=new Sheet(),getUrl:()=> 'https://docs.google.com/spreadsheets/d/test'};
 sheets['Настройки'].getRange('B4:B10').setValues([[new Date('2026-10-01T12:00Z')],[1300],[40000],[0],[new Date('2026-10-01T12:00Z')],[32],['Наш дом']]);
-sheets['Настройки'].getRange('D18:E49').setValues(Array.from({length:32},(_,i)=>[String(65+i),i+65===91?1000:i+65===87?1100:1300]));
+sheets['Настройки'].getRange('A18:B49').setValues(Array.from({length:32},(_,i)=>[String(65+i),i+65===91?1000:i+65===87?1100:1300]));
 const ctx={Date,console,SpreadsheetApp:{openById:()=>ss,flush(){}},ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({text,setMimeType(){return this;}})},Utilities:{DigestAlgorithm:{SHA_256:'sha256'},Charset:{UTF_8:'utf8'},computeDigest:(_,text)=>[...digest(text)],formatDate:(d,tz,fmt)=>new Intl.DateTimeFormat('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit'}).format(d),getUuid:()=>crypto.randomUUID()},LockService:{getScriptLock:()=>({waitLock(){},hasLock:()=>true,releaseLock(){}})}};
 vm.createContext(ctx);let source=fs.readFileSync('apps-script/Code.gs','utf8').replace(/const ADMIN_KEY_HASH = '[^']+'/,`const ADMIN_KEY_HASH = '${digest(key).toString('hex')}'`);vm.runInContext(source,ctx);
 const get=()=>JSON.parse(ctx.doGet().text);const post=b=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(b)}}).text);
@@ -19,5 +19,5 @@ assert.equal(post({...p,action:'updatePayment',adminKey:key,expectedVersion:vers
 const config=r.config;r=post({action:'settings',adminKey:key,expectedVersion:config.version,...config,salaryCents:0,fees:{...config.fees,'91':120000}});assert.equal(r.ok,true,r.error);assert.equal(r.config.salaryCents,0);assert.equal(r.config.fees['91'],120000);
 r=post({action:'deletePayment',adminKey:key,id:p.id,expectedVersion:r.payments[0].version});assert.equal(r.ok,true,r.error);assert.equal(r.payments.length,0);assert.equal(sheets['Платежи'].rows[4][3],0);assert.equal(sheets['Платежи'].rows[4][8],1100);assert.ok(sheets['История изменений'].getLastRow()>=4);assert.equal(post(p).ok,false);
 const exp={action:'expense',id:crypto.randomUUID(),month:'2026-10',amountCents:4000000,category:'salary',title:'Зарплата'};assert.equal(post(exp).ok,false);r=post({...exp,adminKey:key});assert.equal(r.ok,true,r.error);assert.equal(r.expenses.length,1);
-sheets['Настройки'].getRange('E18').setValues([[1500]]);assert.equal(get().config.fees['65'],150000);
+sheets['Настройки'].getRange('B18').setValues([[1500]]);assert.equal(get().config.fees['65'],150000);
 console.log('Backend: anonymous entry, access control, duplicate protection, edits/conflicts, recoverable deletion/audit, expense and direct Sheet tariff read passed.');

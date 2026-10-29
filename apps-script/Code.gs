@@ -18,7 +18,7 @@ function entries_(s,kind){if(s.getLastRow()<5)return [];return s.getRange(5,1,Ma
  p.version=hash_(JSON.stringify(p));p._row=i+5;return p;
  }).filter(Boolean);}
 function config_(ss){const s=sheet_(ss,'Настройки'),v=s.getRange('B4:B10').getValues().map(function(r){return r[0];});const fees={};
- s.getRange('D18:E49').getValues().forEach(function(r){if(APARTMENTS.includes(String(r[0]))&&Number(r[1])>0)fees[String(r[0])]=Math.round(Number(r[1])*100);});
+ s.getRange('A18:B49').getValues().forEach(function(r){if(APARTMENTS.includes(String(r[0]))&&Number(r[1])>0)fees[String(r[0])]=Math.round(Number(r[1])*100);});
  const c={name:String(v[6]||'Наш дом'),apartments:APARTMENTS,startMonth:month_(v[4]),openingCents:Math.round(Number(v[3]||0)*100),salaryCents:Math.round(Number(v[2]===''?40000:v[2])*100),defaultFeeCents:Math.round(Number(v[1]||1300)*100),fees:fees};
  APARTMENTS.forEach(function(a){if(!fees[a])fees[a]=a==='91'?100000:a==='87'?110000:c.defaultFeeCents;});
  if(!validMonth_(c.startMonth))throw Error('Проверьте месяц начала учёта в Настройки!B8.');
@@ -53,7 +53,7 @@ function doPost(event){let lock;try{
   if(!b.fees||APARTMENTS.some(function(a){return !Number.isSafeInteger(b.fees[a])||b.fees[a]<=0||b.fees[a]>100000000;}))throw Error('Укажите взнос для каждой квартиры.');
   if(entries_(sheet_(ss,'Платежи'),'payment').concat(entries_(sheet_(ss,'Расходы'),'expense')).some(function(p){return p.month<b.startMonth;}))throw Error('Начало учёта не может быть позже существующих операций.');
   audit_(ss,'settings',config,{name:b.name,startMonth:b.startMonth,openingCents:b.openingCents,salaryCents:b.salaryCents,fees:b.fees});
-  const s=sheet_(ss,'Настройки');s.getRange('B5:B10').setValues([[b.defaultFeeCents/100],[b.salaryCents/100],[b.openingCents/100],[date_(b.startMonth)],[32],[literal_(b.name.trim())]]);s.getRange('D18:E49').setValues(APARTMENTS.map(function(a){return [a,b.fees[a]/100];}));
+  const s=sheet_(ss,'Настройки');s.getRange('B5:B10').setValues([[b.defaultFeeCents/100],[b.salaryCents/100],[b.openingCents/100],[date_(b.startMonth)],[32],[literal_(b.name.trim())]]);s.getRange('A18:B49').setValues(APARTMENTS.map(function(a){return [a,b.fees[a]/100];}));
  }else if(b.action==='reminder'){
   if(!APARTMENTS.includes(b.apartment)||!validMonth_(b.month))throw Error('Проверьте квартиру и месяц.');
   let s=ss.getSheetByName('Напоминания');if(!s){s=ss.insertSheet('Напоминания');s.appendRow(['ID','Квартира','Месяц','Отправлено']);s.setFrozenRows(1);s.hideSheet();}s.appendRow([Utilities.getUuid(),b.apartment,date_(b.month),new Date()]);
