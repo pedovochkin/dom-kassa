@@ -1,0 +1,19 @@
+@media(max-width:650px){
+  .payment-fields label{font-size:12px}
+  .select-wrap select{font-size:14px}
+  .payment-hint{font-size:10px}
+  .card-footnote{font-size:10px}
+  .collection-target,.collection-bottom{font-size:11px}
+  .collection-note{font-size:10px}
+  .status-card h3{font-size:12px}
+  .status-card p{font-size:10px}
+  .operation-title strong{font-size:12px}
+  .operation-title span{font-size:10px}
+  .sheets-strip strong{font-size:12px}
+  .sheets-strip p{font-size:10px}
+  .apartment-row>b{display:block;grid-column:2;grid-row:3;justify-self:end;font-size:10px}
+  .apartment-row>b.negative:before{content:"Доплатить: ";font-size:9px}
+  .apartment-row>b.positive:before{content:"Переплата: ";font-size:9px}
+  .apartment-row>.row-action{height:44px;width:38px}
+}
+.primary-button{padding-left:15px;padding-right:15px}
